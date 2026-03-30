@@ -1,0 +1,16 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "tsc && cp src/index.html dist/ && cp src/config.json dist/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "electron": "^41.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
+}
