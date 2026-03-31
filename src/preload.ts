@@ -35,21 +35,28 @@ async function monitorDOM() {
         if (assistantMessages.length === 0) continue;
 
         const latestMessage = assistantMessages[assistantMessages.length - 1];
-        const textContent = latestMessage.textContent || '';
 
-        // Looking for triggers like LOCAL_EXEC
-        const regex = /LOCAL_EXEC:\s*```(?:bash|sh|cmd)?\s*([\s\S]*?)```/g;
-        let match;
+        // Find blocks containing the trigger within this message
+        // This is robust against HTML rendering by the AI site
+        const walker = document.createTreeWalker(latestMessage, NodeFilter.SHOW_TEXT, null);
+        let node;
+        let fullText = '';
+        while ((node = walker.nextNode())) {
+           fullText += node.nodeValue + '\n';
+        }
 
-        while ((match = regex.exec(textContent)) !== null) {
-          if (match[1]) {
-            const command = match[1].trim();
-            if (!processedCommands.has(command)) {
-              processedCommands.add(command);
-              console.log(`Sending command for execution: ${command}`);
-              ipcRenderer.send('local-exec', command);
-            }
-          }
+        // Many web chat platforms render markdown as HTML elements (like <pre><code>)
+        // so we just check for 'LOCAL_EXEC' and then grab the adjacent code blocks.
+        if (latestMessage.textContent?.includes('LOCAL_EXEC')) {
+           const codeBlocks = (latestMessage as Element).querySelectorAll('pre code, code');
+           for (let i = 0; i < codeBlocks.length; i++) {
+              const command = codeBlocks[i].textContent?.trim();
+              if (command && !processedCommands.has(command)) {
+                 processedCommands.add(command);
+                 console.log(`Sending command for execution: ${command}`);
+                 ipcRenderer.send('local-exec', command);
+              }
+           }
         }
       }
     }
