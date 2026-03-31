@@ -1,0 +1,12 @@
+{
+  "platforms": {
+    "chatgpt": {
+      "hostnames": ["chat.openai.com", "chatgpt.com"],
+      "assistantMessageSelector": "div[data-message-author-role=\"assistant\"]"
+    },
+    "gemini": {
+      "hostnames": ["gemini.google.com"],
+      "assistantMessageSelector": ".model-response-text"
+    }
+  }
+}
