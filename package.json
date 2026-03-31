@@ -5,12 +5,34 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "electron .",
-    "build": "tsc && cp src/index.html dist/ && cp src/config.json dist/",
+    "build": "tsc && copyfiles -u 1 src/index.html src/config.json dist/",
+    "dist": "npm run build && electron-builder",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "copyfiles": "^2.4.1",
     "electron": "^41.1.0",
+    "electron-builder": "^26.8.1",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
+  },
+  "build": {
+    "appId": "com.bilea.app",
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ]
   }
 }
